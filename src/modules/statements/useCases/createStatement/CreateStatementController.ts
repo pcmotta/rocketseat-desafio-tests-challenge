@@ -18,11 +18,12 @@ export class CreateStatementController {
 
     const createStatement = container.resolve(CreateStatementUseCase);
 
+
     const statement = await createStatement.execute({
-      user_id,
-      type,
-      amount,
-      description
+        user_id,
+        type,
+        amount,
+        description
     });
 
     return response.status(201).json(statement);
