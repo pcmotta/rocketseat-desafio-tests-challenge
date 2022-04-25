@@ -28,8 +28,21 @@ describe('Get Balance', () => {
             password: await hash('123456', 8)
         })
 
+        const user2 = await userRepository.create({
+            name: 'User Balance Test',
+            email: 'user2@balance.com',
+            password: await hash('123456', 8)
+        })
+
         await statementRepository.create({
             user_id: user.id as string,
+            type: OperationType.DEPOSIT,
+            amount: 200,
+            description: 'Statement Description'
+        })
+
+        await statementRepository.create({
+            user_id: user2.id as string,
             type: OperationType.DEPOSIT,
             amount: 100,
             description: 'Statement Description'
@@ -42,10 +55,26 @@ describe('Get Balance', () => {
             description: 'Statement Description'
         })
 
+        await statementRepository.create({
+            user_id: user.id as string,
+            sender_id: user2.id as string,
+            type: OperationType.TRANSFER,
+            amount: 50,
+            description: 'Statement Description'
+        })
+
+        await statementRepository.create({
+            user_id: user2.id as string,
+            sender_id: user.id as string,
+            type: OperationType.TRANSFER,
+            amount: 30,
+            description: 'Statement Description'
+        })
+
         const balance = await getBalanceUseCase.execute({ user_id: user.id as string })
 
-        expect(balance.statement.length).toBe(2)
-        expect(balance.balance).toBe(40)
+        expect(balance.statement.length).toBe(4)
+        expect(balance.balance).toBe(160)
     })
 
     it('should not be able to get a balance from an unexistent user', () => {
